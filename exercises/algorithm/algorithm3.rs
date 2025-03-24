@@ -3,11 +3,36 @@
 	This problem requires you to implement a sorting algorithm
 	you can use bubble sorting, insertion sorting, heap sorting, etc.
 */
-// I AM NOT DONE
 
-fn sort<T>(array: &mut [T]){
-	//TODO
+fn sort<T: PartialOrd>(array: &mut [T]) {
+    let len = array.len();
+    
+    // 特殊情况：空数组或只有一个元素的数组已经是有序的
+    if len <= 1 {
+        return;
+    }
+    
+    // 冒泡排序
+    for i in 0..len {
+        // 优化：如果一轮中没有发生交换，说明数组已经有序
+        let mut swapped = false;
+        
+        // 每轮比较相邻元素并交换（如果需要）
+        for j in 0..len - i - 1 {
+            if array[j] > array[j + 1] {
+                // 交换元素
+                array.swap(j, j + 1);
+                swapped = true;
+            }
+        }
+        
+        // 如果没有发生交换，提前退出
+        if !swapped {
+            break;
+        }
+    }
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;

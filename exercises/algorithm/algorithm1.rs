@@ -2,7 +2,6 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -69,15 +68,58 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+    pub fn merge(mut list_a: LinkedList<T>, mut list_b: LinkedList<T>) -> Self
+    where T: Ord + Clone
+    {
+        let mut result = LinkedList::new();
+        
+        // 获取链表A的第一个节点
+        let mut a_current = list_a.start;
+        // 获取链表B的第一个节点
+        let mut b_current = list_b.start;
+        
+        // 遍历两个链表并合并
+        while a_current.is_some() && b_current.is_some() {
+            // 安全地获取节点值进行比较
+            let a_val = unsafe { &(*a_current.unwrap().as_ptr()).val };
+            let b_val = unsafe { &(*b_current.unwrap().as_ptr()).val };
+            
+            if a_val <= b_val {
+                // 将链表A的当前节点值添加到结果链表
+                result.add(a_val.clone());
+                // 移动到链表A的下一个节点
+                a_current = unsafe { (*a_current.unwrap().as_ptr()).next };
+            } else {
+                // 将链表B的当前节点值添加到结果链表
+                result.add(b_val.clone());
+                // 移动到链表B的下一个节点
+                b_current = unsafe { (*b_current.unwrap().as_ptr()).next };
+            }
         }
-	}
+        
+        // 处理链表A中剩余的节点
+        while a_current.is_some() {
+            // 安全地获取节点值
+            let a_val = unsafe { &(*a_current.unwrap().as_ptr()).val };
+            result.add(a_val.clone());
+            // 移动到链表A的下一个节点
+            a_current = unsafe { (*a_current.unwrap().as_ptr()).next };
+        }
+        
+        // 处理链表B中剩余的节点
+        while b_current.is_some() {
+            // 安全地获取节点值
+            let b_val = unsafe { &(*b_current.unwrap().as_ptr()).val };
+            result.add(b_val.clone());
+            // 移动到链表B的下一个节点
+            b_current = unsafe { (*b_current.unwrap().as_ptr()).next };
+        }
+        
+        // 计算新链表长度
+        result.length = list_a.length + list_b.length;
+        
+        result
+    }
 }
 
 impl<T> Display for LinkedList<T>

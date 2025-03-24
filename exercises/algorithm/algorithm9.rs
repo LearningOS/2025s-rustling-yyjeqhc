@@ -2,7 +2,6 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -37,7 +36,23 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        // 添加元素到堆的末尾
+        self.items.push(value);
+        self.count += 1;
+        
+        // 调整堆以保持堆属性（上浮操作）
+        let mut idx = self.count;
+        while idx > 1 {
+            let parent_idx = self.parent_idx(idx);
+            
+            // 如果当前元素满足比较条件，交换元素
+            if (self.comparator)(&self.items[idx], &self.items[parent_idx]) {
+                self.items.swap(idx, parent_idx);
+                idx = parent_idx;
+            } else {
+                break;
+            }
+        }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -57,8 +72,15 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        let left_idx = self.left_child_idx(idx);
+        let right_idx = self.right_child_idx(idx);
+        
+        // 如果右子节点存在且满足比较条件，返回右子节点索引
+        if right_idx <= self.count && (self.comparator)(&self.items[right_idx], &self.items[left_idx]) {
+            right_idx
+        } else {
+            left_idx
+        }
     }
 }
 
@@ -84,8 +106,41 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        if self.is_empty() {
+            return None;
+        }
+        
+        // 保存根节点的值
+        let result = std::mem::replace(&mut self.items[1], T::default());
+        
+        // 将最后一个元素移动到根节点位置
+        if self.count > 1 {
+            self.items[1] = self.items.pop().unwrap();
+        } else {
+            self.items.pop();
+        }
+        
+        self.count -= 1;
+        
+        // 下沉操作，恢复堆的性质
+        if !self.is_empty() {
+            let mut current_idx = 1;
+            
+            // 当前节点有子节点，进行下沉
+            while self.children_present(current_idx) {
+                let smallest_child_idx = self.smallest_child_idx(current_idx);
+                
+                // 如果子节点满足比较条件，交换元素
+                if (self.comparator)(&self.items[smallest_child_idx], &self.items[current_idx]) {
+                    self.items.swap(current_idx, smallest_child_idx);
+                    current_idx = smallest_child_idx;
+                } else {
+                    break;
+                }
+            }
+        }
+        
+        Some(result)
     }
 }
 

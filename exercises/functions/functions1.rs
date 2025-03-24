@@ -9,5 +9,5 @@ fn main() {
 }
 
 fn call_me() {
-
+    println!("我被调用了！");
 }
